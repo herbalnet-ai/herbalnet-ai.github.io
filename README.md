@@ -1,9 +1,9 @@
 # 🌿 HerbalNet.AI — Neural Vision for Indigenous Medicinal Flora
 
-[![GitHub Pages](https://img.shields.io/badge/Live_Demo-GitHub_Pages-10b981?style=for-the-badge&logo=github)](https://danielraaj.github.io/herbalnet.ai/)
+[![GitHub Pages](https://img.shields.io/badge/Live_Demo-GitHub_Pages-10b981?style=for-the-badge&logo=github)](https://herbalnet-ai.github.io/)
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.12+-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://tensorflow.org)
-[![Accuracy](https://img.shields.io/badge/Classification_Accuracy-98.4%25-brightgreen?style=for-the-badge)](https://github.com/DANIELRAAJ/herbalnet.ai)
+[![Accuracy](https://img.shields.io/badge/Classification_Accuracy-98.4%25-brightgreen?style=for-the-badge)](https://github.com/herbalnet-ai/herbalnet-ai.github.io)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 > **HerbalNet AI** bridges traditional Ayurvedic and Siddha botanical knowledge with cutting-edge computer vision. Utilizing fine-tuned **MobileNetV2** with **Neural Architecture Search (NAS)** optimization and **Shannon Entropy Out-Of-Distribution (OOD)** rejection, HerbalNet provides rapid, clinical-grade identification of 10 indigenous medicinal plant species.
@@ -12,7 +12,7 @@
 
 ## 🌐 Live Interactive Website
 Experience the live botanical scanner, interactive herbal encyclopedia, and clinical reports directly in your browser:
-👉 **[https://danielraaj.github.io/herbalnet.ai/](https://danielraaj.github.io/herbalnet.ai/)**
+👉 **[https://herbalnet-ai.github.io/](https://herbalnet-ai.github.io/)**
 
 ---
 
@@ -63,8 +63,8 @@ Experience the live botanical scanner, interactive herbal encyclopedia, and clin
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/DANIELRAAJ/herbalnet.ai.git
-cd herbalnet.ai
+git clone https://github.com/herbalnet-ai/herbalnet-ai.github.io.git
+cd herbalnet-ai.github.io
 ```
 
 ### 2. Set Up Virtual Environment

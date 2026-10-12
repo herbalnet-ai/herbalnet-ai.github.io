@@ -628,7 +628,7 @@ function initCopyCode() {
     const copyBtn = document.getElementById('copyCodeBtn');
     if (copyBtn) {
         copyBtn.addEventListener('click', () => {
-            const codeText = `git clone https://github.com/DANIELRAAJ/herbalnet.ai.git\ncd herbalnet.ai\npython -m venv venv\n.\\venv\\Scripts\\activate\npip install -r requirements.txt\npython app.py`;
+            const codeText = `git clone https://github.com/herbalnet-ai/herbalnet-ai.github.io.git\ncd herbalnet-ai.github.io\npython -m venv venv\n.\\venv\\Scripts\\activate\npip install -r requirements.txt\npython app.py`;
             navigator.clipboard.writeText(codeText).then(() => {
                 copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
                 setTimeout(() => {
