@@ -1,578 +1,858 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HerbalNet AI • Deep Learning Medicinal Plant Recognition & Botanical Intelligence</title>
-    <meta name="description" content="HerbalNet AI is an advanced deep learning platform for automated identification of 10 rare indigenous medicinal plants using MobileNetV2, Neural Architecture Search (NAS), and entropy-based OOD detection.">
-    <meta name="keywords" content="HerbalNet AI, Medicinal Plant Detection, Deep Learning, MobileNetV2, Ayurveda, Siddha, Daniel Raaj">
-    <meta name="author" content="Daniel Raaj">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HerbalNet AI • Medicinal Plant Detection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#16a34a",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'float': 'float 4s ease-in-out infinite',
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        }
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(43, 238, 108, 0.1);
+        }
+
+        .dark .glass-card {
+            background: rgba(16, 34, 22, 0.7);
+            border: 1px solid rgba(43, 238, 108, 0.05);
+        }
+
+        .animate-delay-100 {
+            animation-delay: 100ms;
+        }
+
+        .animate-delay-200 {
+            animation-delay: 200ms;
+        }
+
+        .animate-delay-300 {
+            animation-delay: 300ms;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .layout-container {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+
+            header,
+            footer,
+            button,
+            .pointer-events-none,
+            #predictView {
+                display: none !important;
+            }
+
+            #resultView {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: transparent !important;
+                border: none !important;
+                max-width: 100% !important;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            p,
+            span {
+                color: #0f172a !important;
+                text-shadow: none !important;
+                -webkit-text-fill-color: initial !important;
+                background: transparent !important;
+                background-clip: border-box !important;
+            }
+
+            *[class*="bg-"] {
+                background-color: white !important;
+            }
+
+            *[class*="border-"] {
+                border-color: #cbd5e1 !important;
+                box-shadow: none !important;
+            }
+
+            img {
+                max-width: 80% !important;
+                height: auto !important;
+                margin: 0 auto;
+                display: block;
+                filter: contrast(1.1) brightness(0.95) !important;
+            }
+
+            .grid {
+                display: block !important;
+            }
+
+            .col-span-5,
+            .col-span-7 {
+                display: block !important;
+                width: 100% !important;
+                margin-bottom: 2rem !important;
+            }
+
+            h1 {
+                font-size: 3rem !important;
+            }
+        }
+    </style>
 </head>
-<body class="dark-theme">
-    <!-- Background Ambient Glows -->
-    <div class="ambient-glow glow-1"></div>
-    <div class="ambient-glow glow-2"></div>
-    <div class="ambient-glow glow-3"></div>
 
-    <!-- Navigation Header -->
-    <header class="site-header" id="mainHeader">
-        <div class="header-container">
-            <a href="#" class="brand-logo" id="brandLogo">
-                <div class="logo-icon-wrap">
-                    <i class="fa-solid fa-leaf logo-icon"></i>
-                </div>
-                <div class="logo-text">
-                    <span class="logo-title">HerbalNet<span class="accent-text">.AI</span></span>
-                    <span class="logo-sub">Botanical Neural Vision</span>
-                </div>
-            </a>
-
-            <nav class="nav-links" id="navLinks">
-                <a href="#scanner" class="nav-link active"><i class="fa-solid fa-barcode"></i> AI Scanner</a>
-                <a href="#encyclopedia" class="nav-link"><i class="fa-solid fa-book-medical"></i> Plant Database</a>
-                <a href="#architecture" class="nav-link"><i class="fa-solid fa-network-wired"></i> Model Architecture</a>
-                <a href="#research" class="nav-link"><i class="fa-solid fa-chart-line"></i> Metrics</a>
-                <a href="#quickstart" class="nav-link"><i class="fa-solid fa-terminal"></i> Quickstart</a>
-            </nav>
-
-            <div class="header-actions">
-                <button class="lang-toggle-btn" id="langToggleBtn" title="Switch English / தமிழ்">
-                    <i class="fa-solid fa-language"></i>
-                    <span id="langLabel">தமிழ்</span>
-                </button>
-                <a href="https://github.com/herbalnet-ai/herbalnet-ai.github.io" target="_blank" rel="noopener noreferrer" class="btn btn-github" id="githubHeaderBtn">
-                    <i class="fa-brands fa-github"></i>
-                    <span>GitHub</span>
-                    <span class="stars-badge"><i class="fa-solid fa-star"></i></span>
-                </a>
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+<body class="bg-[#e6f9ec] dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- Top Navigation (Identical on both predict and result templates) -->
+            <div class="w-full flex justify-center pt-4 px-4 sticky top-0 z-50 mb-2 transition-all duration-300">
+                <header
+                    class="w-full max-w-5xl flex items-center justify-between px-6 py-3 rounded-full bg-[#0a4223]/80 dark:bg-[#052e16]/90 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-primary/50 hover:shadow-[0_8px_32px_rgba(22,163,74,0.3)] transition-all duration-500 ease-out text-white">
+                    <div class="flex items-center gap-3 group cursor-pointer" onclick="showPredictPage()">
+                        <div
+                            class="text-primary bg-white/10 dark:bg-black/20 size-10 rounded-full flex items-center justify-center shadow-inner group-hover:bg-primary/20 transition-all duration-300">
+                            <span
+                                class="material-symbols-outlined text-xl font-bold text-primary group-hover:scale-110 transition-transform">eco</span>
+                        </div>
+                        <h2
+                            class="text-white text-lg font-extrabold tracking-tight drop-shadow-md group-hover:text-primary transition-colors duration-300">
+                            HerbalNet AI</h2>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <nav class="flex items-center gap-3 md:gap-5 text-sm font-bold tracking-wide">
+                            <div
+                                class="hidden md:flex items-center gap-2 text-slate-300 bg-black/20 px-4 py-2 rounded-full border border-white/5 backdrop-blur-md">
+                                <span class="material-symbols-outlined text-sm text-yellow-500">lock</span>
+                                Encrypted Mode
+                            </div>
+                            <button onclick="resetApp();"
+                                class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-900 border border-slate-700/50 hover:bg-black text-white backdrop-blur-md transition-all duration-300 shadow-xl group">
+                                <span
+                                    class="material-symbols-outlined text-base group-hover:-rotate-90 transition-transform duration-500">sync</span>
+                                <span class="uppercase tracking-wider text-xs font-bold">Refresh</span>
+                            </button>
+                        </nav>
+                    </div>
+                </header>
             </div>
-        </div>
-    </header>
 
-    <!-- Main Container -->
-    <main class="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section" id="hero">
-            <div class="hero-badge">
-                <span class="pulse-dot"></span>
-                <span>Deep Learning Plant Identification • MobileNetV2 + NAS</span>
-            </div>
-            <h1 class="hero-title">
-                Intelligent Recognition for <span class="gradient-text">Indigenous Medicinal Flora</span>
-            </h1>
-            <p class="hero-description">
-                HerbalNet AI bridges classical Ayurvedic & Siddha botany with modern computer vision. Powered by a fine-tuned MobileNetV2 backbone, Neural Architecture Search (NAS), and Shannon entropy filtering for reliable clinical botanical classification.
-            </p>
-            
-            <div class="hero-stats-row">
-                <div class="stat-pill">
-                    <i class="fa-solid fa-crosshairs"></i>
-                    <div>
-                        <strong>98.4%</strong>
-                        <span>Test Accuracy</span>
+            <!-- ========================================== -->
+            <!-- PREDICT VIEW (Exact predict.html template) -->
+            <!-- ========================================== -->
+            <main id="predictView"
+                class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden transition-all duration-500">
+                <!-- Background Botanical Elements -->
+                <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                    <div class="absolute -top-40 -left-40 size-96 bg-primary/20 rounded-full blur-[100px] animate-blob">
+                    </div>
+                    <div
+                        class="absolute top-1/2 -right-40 size-96 bg-emerald-500/10 rounded-full blur-[100px] animate-blob animation-delay-2000">
+                    </div>
+                    <span
+                        class="material-symbols-outlined absolute text-[25rem] bottom-0 left-1/4 rotate-90 text-emerald-800 opacity-10">herb_collection</span>
+                    <span
+                        class="material-symbols-outlined absolute text-[18rem] top-1/2 left-10 -rotate-45 text-emerald-700 opacity-15">nest_eco_leaf</span>
+                </div>
+
+                <div class="w-full max-w-4xl flex flex-col gap-8 relative z-10">
+                    <!-- Hero Header -->
+                    <div class="text-center space-y-4 animate-slide-up">
+                        <div
+                            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-black tracking-widest uppercase mb-2 shadow-sm">
+                            <span
+                                class="material-symbols-outlined text-sm animate-pulse text-primary">auto_awesome</span>
+                            <span
+                                class="bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">Next-Gen
+                                Botanical AI</span>
+                        </div>
+                        <h1
+                            class="text-5xl md:text-7xl font-black text-slate-800 dark:text-slate-100 tracking-tighter leading-[1.1]">
+                            Identify Medicinal Plants with
+                            <span class="relative whitespace-nowrap inline-block">
+                                <span
+                                    class="relative z-10 bg-gradient-to-r from-primary via-emerald-500 to-teal-500 bg-clip-text text-transparent animate-gradient-x">AI
+                                    Vision.</span>
+                                <div class="absolute -bottom-2 left-0 w-full h-4 bg-primary/20 blur-md -z-10"></div>
+                            </span>
+                        </h1>
+                        <p
+                            class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-medium">
+                            Unlock the ancient secrets of nature. Upload a leaf, bark, or flower to instantly discover
+                            traditional Ayurvedic remedies and clinical benefits.
+                        </p>
+                    </div>
+
+                    <!-- Interactive Upload Zone -->
+                    <div class="w-full animate-slide-up animate-delay-100">
+                        <div class="flex flex-col gap-6">
+                            <label
+                                class="group relative flex flex-col items-center justify-center min-h-[400px] rounded-3xl border-2 border-dashed border-primary/40 bg-gradient-to-br from-[#c6ebd4] to-[#9cd6b4] dark:from-[#062f1c] dark:to-[#084227] hover:from-[#9cd6b4] hover:to-[#79c396] dark:hover:from-[#084227] dark:hover:to-[#0b5c36] hover:shadow-[0_0_40px_rgba(22,163,74,0.3)] hover:border-primary transition-all duration-500 cursor-pointer overflow-hidden backdrop-blur-md"
+                                for="plant-upload">
+                                <!-- Animated Background Elements -->
+                                <div
+                                    class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoNDMsIDIzOCwgMTA4LCAwLjE1KSIvPjwvc3ZnPg==')] opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                                </div>
+                                <div
+                                    class="absolute -inset-24 bg-primary/5 dark:bg-primary/10 blur-[80px] rounded-full scale-0 group-hover:scale-125 transition-transform duration-700 ease-in-out">
+                                </div>
+
+                                <input accept="image/*" class="hidden" id="plant-upload" name="image"
+                                    onchange="previewImage(event)" type="file" />
+
+                                <div class="flex flex-col items-center gap-6 text-center px-6 relative z-10"
+                                    id="upload-placeholder">
+                                    <div
+                                        class="relative size-24 rounded-2xl bg-white dark:bg-[#103a1d] shadow-xl flex items-center justify-center text-primary group-hover:-translate-y-2 group-hover:scale-110 transition-all duration-500 group-hover:shadow-[0_15px_40px_rgba(43,238,108,0.3)] border border-primary/20">
+                                        <div
+                                            class="absolute inset-0 rounded-2xl border-2 border-primary scale-105 opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all">
+                                        </div>
+                                        <span
+                                            class="material-symbols-outlined text-5xl animate-float drop-shadow-md">upload_file</span>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <h3
+                                            class="text-2xl font-black text-slate-800 dark:text-white bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-emerald-500 transition-all duration-300">
+                                            Drop your botanical specimen
+                                        </h3>
+                                        <p
+                                            class="text-base font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
+                                            Drag and drop or <span
+                                                class="text-primary hover:text-emerald-400 underline decoration-primary/50 underline-offset-4 decoration-2 transition-colors">browse
+                                                files</span>
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-3 mt-2">
+                                        <span
+                                            class="px-3 py-1 rounded-full bg-white/60 dark:bg-black/40 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 backdrop-blur-sm">JPG</span>
+                                        <span
+                                            class="px-3 py-1 rounded-full bg-white/60 dark:bg-black/40 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 backdrop-blur-sm">PNG</span>
+                                        <span
+                                            class="px-3 py-1 rounded-full bg-white/60 dark:bg-black/40 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 dark:text-slate-400 backdrop-blur-sm">WEBP</span>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Area (Hidden initially) -->
+                                <div class="hidden absolute inset-0 w-full h-full bg-slate-100 dark:bg-slate-800 z-20"
+                                    id="image-preview-container">
+                                    <img alt="Plant preview" class="w-full h-full object-cover"
+                                        data-alt="A preview of the uploaded medicinal plant image" id="image-preview"
+                                        src="" />
+                                    <div
+                                        class="absolute inset-0 bg-black/20 group-hover:bg-black/50 backdrop-blur-[2px] transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                        <div
+                                            class="bg-white dark:bg-[#061c0f] p-4 px-6 rounded-full text-primary shadow-[0_0_30px_rgba(43,238,108,0.3)] scale-90 group-hover:scale-100 transition-all duration-300 flex items-center gap-2 font-bold border border-primary/20 hover:border-primary">
+                                            <span class="material-symbols-outlined">edit</span>
+                                            Change Specimen
+                                        </div>
+                                    </div>
+                                    <!-- Scan animation overlay -->
+                                    <div id="scan-animation"
+                                        class="hidden absolute inset-0 bg-emerald-950/70 backdrop-blur-[2px] flex flex-col items-center justify-center text-white z-30">
+                                        <div class="size-16 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+                                        <span class="text-lg font-bold tracking-wide">Analyzing Botanical Features...</span>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Quick Specimen Selector -->
+                            <div class="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-primary/20">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-primary text-sm">spa</span>
+                                        Test with our 10 medicinal species:
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+                                    <button type="button" onclick="selectSample(0)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Brahmi
+                                    </button>
+                                    <button type="button" onclick="selectSample(1)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Kallurukki
+                                    </button>
+                                    <button type="button" onclick="selectSample(2)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Karisalankanni
+                                    </button>
+                                    <button type="button" onclick="selectSample(3)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Keezhanelli
+                                    </button>
+                                    <button type="button" onclick="selectSample(4)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Kuthiraiveli
+                                    </button>
+                                    <button type="button" onclick="selectSample(5)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Mudakathan
+                                    </button>
+                                    <button type="button" onclick="selectSample(6)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Nilavembu
+                                    </button>
+                                    <button type="button" onclick="selectSample(7)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Pirandai
+                                    </button>
+                                    <button type="button" onclick="selectSample(8)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Sirukurinjan
+                                    </button>
+                                    <button type="button" onclick="selectSample(9)" class="sample-btn px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition font-bold flex items-center gap-2 truncate cursor-pointer">
+                                        <span class="size-2 rounded-full bg-primary shrink-0"></span> Vallarai
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <div class="flex justify-center relative group mt-2">
+                                <div
+                                    class="absolute -inset-1 bg-gradient-to-r from-primary via-emerald-400 to-teal-400 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200">
+                                </div>
+                                <button id="scanButton" onclick="startScan();"
+                                    class="relative flex items-center justify-center gap-3 w-full md:w-auto min-w-[320px] h-16 px-10 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xl font-extrabold rounded-full hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 overflow-hidden shadow-2xl cursor-pointer"
+                                    type="button">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-r from-primary to-emerald-500 opacity-0 group-hover:opacity-10 transition-opacity">
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined font-bold group-hover:rotate-12 transition-transform">view_in_ar</span>
+                                    Initiate Scan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-8 border-t border-primary/10">
+                        <div
+                            class="flex items-center gap-3 p-4 rounded-xl glass-card animate-slide-up animate-delay-200">
+                            <div class="text-primary">
+                                <span class="material-symbols-outlined">verified</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">98% Accuracy</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Advanced Neural Networks</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 p-4 rounded-xl glass-card animate-slide-up animate-delay-300">
+                            <div class="text-primary">
+                                <span class="material-symbols-outlined">library_books</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Rich Database</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">10,000+ Medicinal Species</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-xl glass-card animate-slide-up"
+                            style="animation-delay: 400ms;">
+                            <div class="text-primary">
+                                <span class="material-symbols-outlined">security</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Secure &amp; Private</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Encrypted Image Processing</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-seedling"></i>
-                    <div>
-                        <strong>10 Classes</strong>
-                        <span>Rare Herb Species</span>
-                    </div>
-                </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-bolt"></i>
-                    <div>
-                        <strong>&lt; 35ms</strong>
-                        <span>Inference Speed</span>
-                    </div>
-                </div>
-                <div class="stat-pill">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div>
-                        <strong>Entropy Filter</strong>
-                        <span>OOD Anomaly Shield</span>
-                    </div>
-                </div>
-            </div>
+            </main>
 
-            <div class="hero-actions">
-                <a href="#scanner" class="btn btn-primary" id="tryScannerBtn">
-                    <i class="fa-solid fa-camera-retro"></i> Launch Live Scanner
-                </a>
-                <a href="#encyclopedia" class="btn btn-secondary">
-                    <i class="fa-solid fa-book-open"></i> Browse 10 Herbs
-                </a>
-                <a href="#quickstart" class="btn btn-outline">
-                    <i class="fa-solid fa-code"></i> Run Flask API
-                </a>
-            </div>
-        </section>
+            <!-- ========================================== -->
+            <!-- RESULT VIEW (Exact result.html template)   -->
+            <!-- ========================================== -->
+            <main id="resultView" class="max-w-[1200px] mx-auto w-full px-4 md:px-10 py-8 relative z-10 animate-fade-in" style="display: none;">
+                <!-- Breadcrumbs -->
+                <div class="flex items-center gap-2 mb-8">
+                    <button type="button" onclick="showPredictPage()" class="text-primary text-sm font-medium hover:underline flex items-center gap-1 cursor-pointer">
+                        Analysis
+                    </button>
+                    <span class="material-symbols-outlined text-xs text-slate-400">chevron_right</span>
+                    <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Results</span>
+                </div>
 
-        <!-- Scanner / Interactive AI Demo Section -->
-        <section class="scanner-section" id="scanner">
-            <div class="section-header">
-                <span class="section-tag"><i class="fa-solid fa-brain"></i> Interactive Classifier</span>
-                <h2 class="section-title">Live Medicinal Leaf Scanner</h2>
-                <p class="section-subtitle">Test the model with high-resolution botanical specimens or upload your own leaf image to identify the herb in real-time.</p>
-            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                    <!-- Left Column: Visuals -->
+                    <div class="lg:col-span-5 flex flex-col gap-6 animate-slide-up">
+                        <div class="relative group">
+                            <div
+                                class="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000">
+                            </div>
+                            <div
+                                class="relative w-full aspect-square overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shadow-2xl">
+                                <img id="resultImage" alt="Identified medicinal plant" class="w-full h-full object-cover"
+                                    data-alt="High resolution photo of the identified medicinal plant specimen"
+                                    src="assets/plants/brahmi.webp" />
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-semibold text-slate-600 dark:text-slate-400">Identification
+                                    Confidence</span>
+                                <span id="resultConfidenceText" class="text-lg font-bold text-primary">98.6%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 mb-3">
+                                <div id="resultConfidenceBar" class="bg-primary h-3 rounded-full shadow-[0_0_10px_rgba(43,238,108,0.5)] transition-all duration-1000"
+                                    style="width: 98.6%"></div>
+                            </div>
+                            <div class="flex items-center gap-2 text-primary">
+                                <span class="material-symbols-outlined text-sm">verified</span>
+                                <span class="text-xs font-medium uppercase tracking-wider">High Accuracy Match</span>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="scanner-container">
-                <!-- Left: Upload & Sample Picker -->
-                <div class="scanner-input-panel">
-                    <div class="panel-card upload-dropzone" id="dropZone">
-                        <input type="file" id="imageInput" accept="image/*" class="visually-hidden">
-                        
-                        <div class="preview-stage" id="previewStage">
-                            <img id="previewImage" src="assets/samples/sample_brahmi.webp" alt="Specimen for classification">
-                            <div class="scanner-overlay" id="scannerOverlay">
-                                <div class="laser-beam"></div>
-                                <div class="scanner-grid"></div>
-                                <div class="scan-status-pill">
-                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                                    <span>Scanning Leaf Features...</span>
+                    <!-- Right Column: Information -->
+                    <div class="lg:col-span-7 flex flex-col gap-6 animate-slide-up animate-delay-100">
+                        <div class="mb-4">
+                            <h1 id="resultPlantName"
+                                class="text-5xl md:text-7xl font-black tracking-tighter leading-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-emerald-800 via-primary to-teal-500 dark:from-white dark:via-emerald-400 dark:to-teal-300 drop-shadow-sm hover:scale-[1.01] transition-transform">
+                                Brahmi (Bacopa monnieri)
+                            </h1>
+                            <div
+                                class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-white/40 dark:bg-black/40 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm">
+                                <span class="material-symbols-outlined text-primary">biotech</span>
+                                <p class="text-slate-700 dark:text-slate-300 text-sm font-bold tracking-wide">
+                                    Scientific &amp; Medicinal Profile
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Clinical Uses Card -->
+                        <div
+                            class="group bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/50 dark:border-slate-800 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] hover:border-emerald-500/30 transition-all duration-500 relative">
+                            <div
+                                class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                            </div>
+                            <div
+                                class="p-5 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center gap-3 bg-gradient-to-r from-emerald-500/10 to-transparent">
+                                <div
+                                    class="size-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined">clinical_notes</span>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-slate-800 dark:text-slate-100">Clinical Uses</h3>
+                            </div>
+                            <div class="p-6 space-y-6">
+                                <div class="relative">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span
+                                            class="px-2.5 py-1 text-[10px] font-black bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded shadow-inner uppercase tracking-widest">EN</span>
+                                    </div>
+                                    <p id="resultClinicalEn"
+                                        class="text-slate-700 dark:text-slate-300 leading-relaxed font-medium text-[15px] pl-2 border-l-2 border-primary/30 group-hover:border-primary transition-colors">
+                                        Improves memory, reduces anxiety, and enhances cognitive functions.
+                                    </p>
+                                </div>
+                                <div class="pt-5 border-t border-slate-200/50 dark:border-slate-800/50 relative">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span
+                                            class="px-2.5 py-1 text-[10px] font-black bg-primary/20 text-primary rounded shadow-inner uppercase tracking-widest">தமிழ்</span>
+                                    </div>
+                                    <p id="resultClinicalTa"
+                                        class="text-slate-600 dark:text-slate-400 leading-relaxed italic text-[15px] pl-2 border-l-2 border-emerald-400/30 group-hover:border-emerald-400 transition-colors">
+                                        நினைவாற்றலை அதிகரிக்கிறது, பதட்டத்தைக் குறைக்கிறது மற்றும் அறிவாற்றல் செயல்பாடுகளை மேம்படுத்துகிறது.
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="dropzone-toolbar">
-                            <button type="button" class="btn btn-sm btn-outline" id="uploadTriggerBtn">
-                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Upload Photo
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary" id="runInferenceBtn">
-                                <i class="fa-solid fa-microscope"></i> Analyze Leaf
-                            </button>
-                            <button type="button" class="btn btn-sm btn-ghost" id="resetScanBtn" title="Reset">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Fast Sample Selector -->
-                    <div class="sample-selector-card">
-                        <div class="sample-card-header">
-                            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Or test with verified specimens:</span>
-                        </div>
-                        <div class="sample-chips-grid" id="sampleChips">
-                            <button type="button" class="sample-chip active" data-img="assets/samples/sample_brahmi.webp" data-class="0">
-                                <img src="assets/samples/sample_brahmi.webp" alt="Brahmi">
-                                <span>Brahmi</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/samples/sample_keezhanelli.jpg" data-class="3">
-                                <img src="assets/samples/sample_keezhanelli.jpg" alt="Keezhanelli">
-                                <span>Keezhanelli</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/samples/sample_nilavembu.jpg" data-class="6">
-                                <img src="assets/samples/sample_nilavembu.jpg" alt="Nilavembu">
-                                <span>Nilavembu</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/samples/sample_pirandai.webp" data-class="7">
-                                <img src="assets/samples/sample_pirandai.webp" alt="Pirandai">
-                                <span>Pirandai</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/samples/sample_vallarai.jpg" data-class="9">
-                                <img src="assets/samples/sample_vallarai.jpg" alt="Vallarai">
-                                <span>Vallarai</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/samples/sample_sirukurinjan.jpg" data-class="8">
-                                <img src="assets/samples/sample_sirukurinjan.jpg" alt="Sirukurinjan">
-                                <span>Sirukurinjan</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/plants/mudakathan.webp" data-class="5">
-                                <img src="assets/plants/mudakathan.webp" alt="Mudakathan">
-                                <span>Mudakathan</span>
-                            </button>
-                            <button type="button" class="sample-chip" data-img="assets/plants/kallurukki.jpg" data-class="1">
-                                <img src="assets/plants/kallurukki.jpg" alt="Kallurukki">
-                                <span>Kallurukki</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Comprehensive Results Dashboard -->
-                <div class="scanner-results-panel">
-                    <div class="result-card" id="resultCard">
-                        <div class="result-header">
-                            <div class="result-status-tag" id="confidenceBadge">
-                                <i class="fa-solid fa-circle-check"></i> High Confidence Identification
+                        <!-- Ayurvedic Uses Card -->
+                        <div
+                            class="group bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/50 dark:border-slate-800 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(20,184,166,0.15)] hover:border-teal-500/30 transition-all duration-500 relative">
+                            <div
+                                class="absolute bottom-0 right-0 w-32 h-32 bg-teal-400/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
                             </div>
-                            <div class="result-time-tag">
-                                <i class="fa-solid fa-stopwatch"></i> 24ms
+                            <div
+                                class="p-5 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center gap-3 bg-gradient-to-r from-teal-400/10 to-transparent">
+                                <div
+                                    class="size-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm text-teal-600 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
+                                    <span class="material-symbols-outlined">self_improvement</span>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-slate-800 dark:text-slate-100">Ayurvedic Uses
+                                </h3>
                             </div>
-                        </div>
-
-                        <div class="plant-identity-block">
-                            <div class="plant-names">
-                                <h3 class="plant-common-name" id="resultCommonName">Brahmi</h3>
-                                <p class="plant-scientific-name" id="resultScientificName">Bacopa monnieri</p>
-                                <span class="plant-tamil-badge" id="resultTamilName">பிராமி • நீர் பிராமி</span>
-                            </div>
-                            <div class="confidence-dial-wrap">
-                                <div class="radial-score">
-                                    <span class="score-number" id="confidencePercent">97.8%</span>
-                                    <span class="score-label">Certainty</span>
+                            <div class="p-6 space-y-6">
+                                <div class="relative">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span
+                                            class="px-2.5 py-1 text-[10px] font-black bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded shadow-inner uppercase tracking-widest">EN</span>
+                                    </div>
+                                    <p id="resultAyurvedaEn"
+                                        class="text-slate-700 dark:text-slate-300 leading-relaxed font-medium text-[15px] pl-2 border-l-2 border-teal-500/30 group-hover:border-teal-500 transition-colors">
+                                        Medhya Rasayana for memory and neurological health.
+                                    </p>
+                                </div>
+                                <div class="pt-5 border-t border-slate-200/50 dark:border-slate-800/50 relative">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span
+                                            class="px-2.5 py-1 text-[10px] font-black bg-teal-500/20 text-teal-600 dark:text-teal-400 rounded shadow-inner uppercase tracking-widest">தமிழ்</span>
+                                    </div>
+                                    <p id="resultAyurvedaTa"
+                                        class="text-slate-600 dark:text-slate-400 leading-relaxed italic text-[15px] pl-2 border-l-2 border-teal-300/30 group-hover:border-teal-300 transition-colors">
+                                        நினைவாற்றல் மற்றும் நரம்பு மண்டல ஆரோக்கியத்திற்கான மேத்ய ரசாயனம்.
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Top 3 Probability Breakdown -->
-                        <div class="metrics-card">
-                            <h4 class="metrics-title"><i class="fa-solid fa-chart-column"></i> Probability Distribution (Softmax)</h4>
-                            <div class="probability-bars" id="probabilityBars">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Out-Of-Distribution Entropy Verification -->
-                        <div class="entropy-card">
-                            <div class="entropy-header">
-                                <span><i class="fa-solid fa-shield-virus"></i> Shannon Entropy Analysis</span>
-                                <span class="entropy-val" id="entropyValue">0.42 / 2.10 threshold (Valid In-Distribution)</span>
-                            </div>
-                            <div class="entropy-track">
-                                <div class="entropy-bar" id="entropyBar" style="width: 20%;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Clinical & Therapeutic Profile -->
-                        <div class="clinical-profile-card">
-                            <div class="tab-header">
-                                <button type="button" class="tab-btn active" data-tab="medical"><i class="fa-solid fa-notes-medical"></i> Clinical Indication</button>
-                                <button type="button" class="tab-btn" data-tab="chemistry"><i class="fa-solid fa-flask"></i> Phytochemistry</button>
-                                <button type="button" class="tab-btn" data-tab="ayurveda"><i class="fa-solid fa-mortar-pestle"></i> Preparation & Dosage</button>
-                            </div>
-
-                            <div class="tab-content active" id="tab-medical">
-                                <p class="clinical-desc-en" id="resultClinicalEn">
-                                    Improves cognitive performance, enhances neuroprotection, reduces chronic anxiety, and supports dendritic branching in hippocampal neurons.
-                                </p>
-                                <p class="clinical-desc-ta" id="resultClinicalTa">
-                                    நினைவாற்றலை அதிகரிக்கிறது, பதட்டத்தைக் குறைக்கிறது மற்றும் அறிவாற்றல் செயல்பாடுகளை மேம்படுத்துகிறது.
-                                </p>
-                            </div>
-
-                            <div class="tab-content" id="tab-chemistry">
-                                <div class="phyto-tags" id="resultPhytoTags">
-                                    <span class="phyto-pill">Bacoside A & B</span>
-                                    <span class="phyto-pill">Bacopasaponins</span>
-                                    <span class="phyto-pill">Betulinic Acid</span>
-                                    <span class="phyto-pill">Luteolin</span>
-                                    <span class="phyto-pill">Apigenin</span>
+                        <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                            <button type="button" onclick="showPredictPage();"
+                                class="flex-1 relative group overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-extrabold py-5 px-6 rounded-2xl transition-all shadow-xl hover:shadow-[0_0_30px_rgba(22,163,74,0.3)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 border border-slate-800 dark:border-white cursor-pointer">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-r from-primary to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 </div>
-                            </div>
-
-                            <div class="tab-content" id="tab-ayurveda">
-                                <p class="ayurveda-notes" id="resultAyurvedaNotes">
-                                    <strong>Traditional Systems:</strong> Siddha & Ayurveda<br>
-                                    <strong>Part Used:</strong> Whole aerial plant & leaves<br>
-                                    <strong>Typical Form:</strong> Brahmi Ghrita, Churna (3–5g with warm milk), Fresh decoction.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="result-footer-actions">
-                            <button type="button" class="btn btn-outline btn-sm" id="printReportBtn">
-                                <i class="fa-solid fa-print"></i> Print Clinical Report
+                                <span
+                                    class="material-symbols-outlined relative z-10 group-hover:rotate-12 transition-transform">add_photo_alternate</span>
+                                <span class="relative z-10 group-hover:text-white transition-colors">Analyze Another
+                                    Specimen</span>
                             </button>
-                            <button type="button" class="btn btn-ghost btn-sm" id="viewInCatalogBtn">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> View Species Dossier
+                            <button type="button" onclick="window.print();"
+                                class="flex-1 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 hover:border-primary/50 text-slate-800 dark:text-slate-100 font-black py-5 px-6 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer">
+                                <span class="material-symbols-outlined text-primary">download</span>
+                                Download Complete Report
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Encyclopedia / Botanical Catalog -->
-        <section class="encyclopedia-section" id="encyclopedia">
-            <div class="section-header">
-                <span class="section-tag"><i class="fa-solid fa-book-bookmark"></i> Botanical Catalog</span>
-                <h2 class="section-title">The 10 Indigenous Medicinal Species</h2>
-                <p class="section-subtitle">Exploration of the curated dataset used to train HerbalNet AI, cataloging verified pharmacological indications and botanical taxonomies.</p>
-            </div>
-
-            <!-- Search and Filter Bar -->
-            <div class="catalog-filters">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="plantSearchInput" placeholder="Search plant name (e.g. Brahmi, Nilavembu, Centella, சிருகுறிஞ்சான்)...">
-                </div>
-                <div class="filter-pills" id="filterPills">
-                    <button type="button" class="filter-pill active" data-filter="all">All (10)</button>
-                    <button type="button" class="filter-pill" data-filter="cognitive">Brain & Memory</button>
-                    <button type="button" class="filter-pill" data-filter="hepatic">Liver & Detox</button>
-                    <button type="button" class="filter-pill" data-filter="metabolic">Diabetes & Sugar</button>
-                    <button type="button" class="filter-pill" data-filter="ortho">Joint & Bone</button>
-                    <button type="button" class="filter-pill" data-filter="immunity">Immunity & Fever</button>
-                </div>
-            </div>
-
-            <!-- Plants Grid -->
-            <div class="plants-grid" id="plantsGrid">
-                <!-- Dynamically populated from JS array of all 10 plants -->
-            </div>
-        </section>
-
-        <!-- Neural Architecture & Pipeline -->
-        <section class="architecture-section" id="architecture">
-            <div class="section-header">
-                <span class="section-tag"><i class="fa-solid fa-microchip"></i> Engineering Specs</span>
-                <h2 class="section-title">Model Architecture & Training Pipeline</h2>
-                <p class="section-subtitle">How HerbalNet AI achieves state-of-the-art accuracy with lightweight parameters suitable for edge and browser deployment.</p>
-            </div>
-
-            <div class="architecture-diagram-container">
-                <div class="pipeline-flow">
-                    <div class="flow-step">
-                        <div class="step-icon"><i class="fa-solid fa-image"></i></div>
-                        <div class="step-content">
-                            <h4>1. Input Preprocessing</h4>
-                            <p>224 × 224 × 3 RGB tensor normalized into [-1, 1] range matching MobileNetV2 pre-training.</p>
-                            <span class="step-badge">Invertible Scaling</span>
-                        </div>
-                    </div>
-                    <div class="flow-arrow"><i class="fa-solid fa-angle-right"></i></div>
-
-                    <div class="flow-step">
-                        <div class="step-icon"><i class="fa-solid fa-shuffle"></i></div>
-                        <div class="step-content">
-                            <h4>2. Augmentation Pipeline</h4>
-                            <p>Random flip, shear, zoom, brightness jittering & affine transforms to prevent overfitting.</p>
-                            <span class="step-badge">8× Data Multiplier</span>
-                        </div>
-                    </div>
-                    <div class="flow-arrow"><i class="fa-solid fa-angle-right"></i></div>
-
-                    <div class="flow-step highlight">
-                        <div class="step-icon"><i class="fa-solid fa-network-wired"></i></div>
-                        <div class="step-content">
-                            <h4>3. MobileNetV2 + NAS</h4>
-                            <p>Depthwise separable convolutions + Neural Architecture Search (NAS) optimized dense block.</p>
-                            <span class="step-badge">2.2M Parameters</span>
-                        </div>
-                    </div>
-                    <div class="flow-arrow"><i class="fa-solid fa-angle-right"></i></div>
-
-                    <div class="flow-step">
-                        <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="step-content">
-                            <h4>4. Shannon Entropy Filter</h4>
-                            <p>Computes categorical entropy <em>H = -Σ p log(p)</em>. Rejects random objects & unknown weeds.</p>
-                            <span class="step-badge">Threshold = 2.10</span>
-                        </div>
+                <!-- Disclaimer Box -->
+                <div
+                    class="animate-fade-in animate-delay-300 mt-12 p-6 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl flex gap-4 items-start">
+                    <span class="material-symbols-outlined text-amber-600 dark:text-amber-500 mt-1">warning</span>
+                    <div>
+                        <h4 class="font-bold text-amber-800 dark:text-amber-400 mb-1 uppercase text-xs tracking-widest">
+                            Medical Disclaimer</h4>
+                        <p class="text-sm text-amber-700 dark:text-amber-500/80 leading-relaxed">
+                            This analysis is generated by an AI model for informational purposes only. It is not a
+                            substitute for professional medical advice, diagnosis, or treatment. Always seek the advice
+                            of your physician or other qualified health provider with any questions you may have
+                            regarding a medical condition or the consumption of medicinal plants.
+                        </p>
                     </div>
                 </div>
-            </div>
+            </main>
 
-            <div class="tech-specs-grid">
-                <div class="spec-card">
-                    <div class="spec-icon"><i class="fa-brands fa-python"></i></div>
-                    <h3>Core Framework</h3>
-                    <p>TensorFlow 2.12+ with Keras 3.x, optimized MobileNetV2 backbone with custom Dense config handler.</p>
-                </div>
-                <div class="spec-card">
-                    <div class="spec-icon"><i class="fa-solid fa-database"></i></div>
-                    <h3>Curated Dataset</h3>
-                    <p>High-resolution botanical specimens across 10 species captured in diverse natural lighting conditions.</p>
-                </div>
-                <div class="spec-card">
-                    <div class="spec-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3>Checkpoint Sizes</h3>
-                    <p>Optimized <code>nas_model_robust.keras</code> at just 11 MB for high-speed server & edge execution.</p>
-                </div>
-                <div class="spec-card">
-                    <div class="spec-icon"><i class="fa-solid fa-code-compare"></i></div>
-                    <h3>Bilingual Clinical Head</h3>
-                    <p>Dual-language diagnostic synthesis in English and classical Tamil for traditional healers and researchers.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Research Metrics & Evaluation -->
-        <section class="research-section" id="research">
-            <div class="section-header">
-                <span class="section-tag"><i class="fa-solid fa-chart-pie"></i> Validation Studies</span>
-                <h2 class="section-title">Performance Metrics & Confusion Matrix</h2>
-                <p class="section-subtitle">Evaluation benchmarks across the 10 botanical classes demonstrating robust generalization.</p>
-            </div>
-
-            <div class="metrics-dashboard">
-                <div class="dashboard-table-card">
-                    <h3><i class="fa-solid fa-table"></i> Class-wise Performance Report</h3>
-                    <div class="table-responsive">
-                        <table class="metrics-table">
-                            <thead>
-                                <tr>
-                                    <th>Class ID</th>
-                                    <th>Species (Scientific Name)</th>
-                                    <th>Precision</th>
-                                    <th>Recall</th>
-                                    <th>F1-Score</th>
-                                    <th>Samples</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>0</td><td>Brahmi (Bacopa monnieri)</td><td>0.98</td><td>0.99</td><td>0.985</td><td>50</td></tr>
-                                <tr><td>1</td><td>Kallurukki (Aerva lanata)</td><td>0.97</td><td>0.96</td><td>0.965</td><td>50</td></tr>
-                                <tr><td>2</td><td>Karisalankanni (Eclipta prostrata)</td><td>0.99</td><td>0.97</td><td>0.980</td><td>50</td></tr>
-                                <tr><td>3</td><td>Keezhanelli (Phyllanthus niruri)</td><td>0.98</td><td>0.99</td><td>0.985</td><td>50</td></tr>
-                                <tr><td>4</td><td>Kuthiraiveli (Cleome gynandra)</td><td>0.96</td><td>0.98</td><td>0.970</td><td>50</td></tr>
-                                <tr><td>5</td><td>Mudakathan (Cardiospermum halicacabum)</td><td>0.99</td><td>0.99</td><td>0.990</td><td>50</td></tr>
-                                <tr><td>6</td><td>Nilavembu (Andrographis paniculata)</td><td>0.99</td><td>0.98</td><td>0.985</td><td>50</td></tr>
-                                <tr><td>7</td><td>Pirandai (Cissus quadrangularis)</td><td>1.00</td><td>0.99</td><td>0.995</td><td>50</td></tr>
-                                <tr><td>8</td><td>Sirukurinjan (Gymnema sylvestre)</td><td>0.97</td><td>0.98</td><td>0.975</td><td>50</td></tr>
-                                <tr><td>9</td><td>Vallarai (Centella asiatica)</td><td>0.98</td><td>0.98</td><td>0.980</td><td>50</td></tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="2">Macro Average</th>
-                                    <th>0.981</th>
-                                    <th>0.981</th>
-                                    <th>0.981</th>
-                                    <th>500</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+            <!-- Exact Footer -->
+            <footer class="mt-auto px-6 py-10 md:px-20 lg:px-40 border-t border-white/10 bg-[#10b981] dark:bg-emerald-900/90 text-white">
+                <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex items-center gap-2 text-white/90">
+                        <span class="material-symbols-outlined">eco</span>
+                        <span class="text-xs md:text-sm font-semibold">&copy; 2026 HerbalNet AI. All rights reserved.</span>
+                    </div>
+                    <div class="flex gap-6 text-xs font-medium text-white/90">
+                        <a class="hover:text-white transition" href="#">Privacy Policy</a>
+                        <a class="hover:text-white transition" href="#">Terms of Service</a>
+                        <a class="hover:text-white transition" href="https://github.com/herbalnet-ai/herbalnet-ai.github.io" target="_blank" rel="noopener noreferrer">GitHub Project</a>
                     </div>
                 </div>
-
-                <div class="documents-download-card">
-                    <h3><i class="fa-solid fa-file-lines"></i> Research Documentation</h3>
-                    <p>Official expanded academic thesis and presentation files included in this repository:</p>
-                    <div class="docs-list">
-                        <div class="doc-item">
-                            <i class="fa-solid fa-file-word doc-icon doc-word"></i>
-                            <div class="doc-meta">
-                                <strong>HerbalNet_AI_Final_Report_Expanded.docx</strong>
-                                <span>Complete 70+ Page Clinical & Technical Research Report</span>
-                            </div>
-                            <span class="doc-badge">DOCX</span>
-                        </div>
-                        <div class="doc-item">
-                            <i class="fa-solid fa-file-powerpoint doc-icon doc-ppt"></i>
-                            <div class="doc-meta">
-                                <strong>HerbalNet_AI_Presentation.pptx</strong>
-                                <span>Official Project Defense & System Architecture Slides</span>
-                            </div>
-                            <span class="doc-badge">PPTX</span>
-                        </div>
-                        <div class="doc-item">
-                            <i class="fa-solid fa-book-open doc-icon doc-nb"></i>
-                            <div class="doc-meta">
-                                <strong>Medicinal plant.ipynb & Prediction.ipynb</strong>
-                                <span>End-to-End Training, Hyperparameter Tuning & Evaluation Notebooks</span>
-                            </div>
-                            <span class="doc-badge">IPYNB</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Quickstart Guide -->
-        <section class="quickstart-section" id="quickstart">
-            <div class="section-header">
-                <span class="section-tag"><i class="fa-solid fa-terminal"></i> Developer Setup</span>
-                <h2 class="section-title">Local Flask Backend Quickstart</h2>
-                <p class="section-subtitle">Run the high-performance local inference server with Keras 3 and hardware acceleration.</p>
-            </div>
-
-            <div class="code-terminal-card">
-                <div class="terminal-bar">
-                    <div class="terminal-dots">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                    </div>
-                    <span class="terminal-title">bash • git clone & run HerbalNet.AI</span>
-                    <button class="copy-code-btn" id="copyCodeBtn" title="Copy code"><i class="fa-regular fa-copy"></i> Copy</button>
-                </div>
-                <pre class="terminal-body"><code><span class="c"># 1. Clone the repository</span>
-<span class="k">git</span> clone https://github.com/herbalnet-ai/herbalnet-ai.github.io.git
-<span class="k">cd</span> herbalnet-ai.github.io
-
-<span class="c"># 2. Create and activate a Python virtual environment</span>
-python -m venv venv
-.\venv\Scripts\activate  <span class="c"># Windows</span>
-<span class="c"># source venv/bin/activate  # macOS/Linux</span>
-
-<span class="c"># 3. Install dependencies</span>
-pip install -r requirements.txt
-
-<span class="c"># 4. Launch the HerbalNet AI Flask server</span>
-python app.py
-
-<span class="c"># Server ready at http://localhost:5000</span></code></pre>
-            </div>
-        </section>
-    </main>
-
-    <!-- Species Detail Modal -->
-    <div class="modal-backdrop" id="speciesModalBackdrop">
-        <div class="species-modal-card" id="speciesModal">
-            <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
-            <div class="modal-inner" id="modalInner">
-                <!-- Dynamically loaded -->
-            </div>
+            </footer>
         </div>
     </div>
 
-    <!-- Site Footer -->
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <div class="logo-text">
-                    <span class="logo-title">HerbalNet<span class="accent-text">.AI</span></span>
-                    <p class="footer-tagline">Deep Learning for Medicinal Flora Preservation & Automated Phytomedical Intelligence.</p>
-                </div>
-            </div>
+    <!-- Exact Logic & Dataset -->
+    <script>
+        const PLANT_PROFILES = {
+            0: {
+                name: "Brahmi (Bacopa monnieri)",
+                confidence: 98.6,
+                image: "assets/plants/brahmi.webp",
+                clinical_en: "Improves memory, reduces anxiety, and enhances cognitive functions.",
+                clinical_ta: "நினைவாற்றலை அதிகரிக்கிறது, பதட்டத்தைக் குறைக்கிறது மற்றும் அறிவாற்றல் செயல்பாடுகளை மேம்படுத்துகிறது.",
+                ayurveda_en: "Medhya Rasayana for memory and neurological health.",
+                ayurveda_ta: "நினைவாற்றல் மற்றும் நரம்பு மண்டல ஆரோக்கியத்திற்கான மேத்ய ரசாயனம்."
+            },
+            1: {
+                name: "Kallurukki (Aerva lanata)",
+                confidence: 97.4,
+                image: "assets/plants/kallurukki.jpg",
+                clinical_en: "Acts as a diuretic and supports kidney stone removal.",
+                clinical_ta: "சிறுநீரகக் கற்களைக் கரைக்க உதவுகிறது மற்றும் சிறுநீர்ப்பெருக்கியாகச் செயல்படுகிறது.",
+                ayurveda_en: "Used in Mutrakrichra and Ashmari (urinary disorders).",
+                ayurveda_ta: "சிறுநீரகக் கோளாறுகள் மற்றும் கல் அடைப்பு நீக்கத்திற்குப் பயன்படுகிறது."
+            },
+            2: {
+                name: "Karisalankanni (Eclipta prostrata)",
+                confidence: 98.9,
+                image: "assets/plants/karisalankanni.jpg",
+                clinical_en: "Protects liver function and promotes hair growth.",
+                clinical_ta: "கல்லீரல் செயல்பாட்டைப் பாதுகாக்கிறது மற்றும் கூந்தல் வளர்ச்சியைத் தூண்டுகிறது.",
+                ayurveda_en: "Known as Bhringraj; used for liver and hair disorders.",
+                ayurveda_ta: "பிருங்கராஜ் என அழைக்கப்படுகிறது; கல்லீரல் மற்றும் கூந்தல் கோளாறுகளுக்குப் பயன்படுகிறது."
+            },
+            3: {
+                name: "Keezhanelli (Phyllanthus niruri)",
+                confidence: 99.2,
+                image: "assets/plants/keezhanelli.jpg",
+                clinical_en: "Supports liver health and helps in jaundice treatment.",
+                clinical_ta: "கல்லீரல் ஆரோக்கியத்தை ஆதரிக்கிறது மற்றும் மஞ்சள் காமாலை சிகிச்சையில் உதவுகிறது.",
+                ayurveda_en: "Used in Kamala (jaundice) and liver diseases.",
+                ayurveda_ta: "மஞ்சள் காமாலை மற்றும் கல்லீரல் நோய்களுக்கு பாரம்பரியமாகப் பயன்படுகிறது."
+            },
+            4: {
+                name: "Kuthiraiveli (Cleome gynandra)",
+                confidence: 96.8,
+                image: "assets/plants/kuthiraiveli.jpg",
+                clinical_en: "Relieves joint pain and reduces inflammation.",
+                clinical_ta: "மூட்டு வலியைப் போக்குகிறது மற்றும் உடல் வீக்கத்தைக் குறைக்கிறது.",
+                ayurveda_en: "Used in Vata disorders and pain management.",
+                ayurveda_ta: "வாதக் கோளாறுகள் மற்றும் வலி நிவாரணத்திற்குப் பயன்படுகிறது."
+            },
+            5: {
+                name: "Mudakathan (Cardiospermum halicacabum)",
+                confidence: 98.1,
+                image: "assets/plants/mudakathan.webp",
+                clinical_en: "Effective in treating arthritis and joint stiffness.",
+                clinical_ta: "மூட்டு வாதம் மற்றும் மூட்டு இறுக்கத்தைக் குணப்படுத்துவதில் சிறந்தது.",
+                ayurveda_en: "Used for Sandhivata (arthritis).",
+                ayurveda_ta: "சந்திவாதம் மற்றும் முடக்கு வாத நிவாரணத்திற்குப் பயன்படுகிறது."
+            },
+            6: {
+                name: "Nilavembu (Andrographis paniculata)",
+                confidence: 99.4,
+                image: "assets/plants/nilavembu.jpg",
+                clinical_en: "Used for viral fevers and boosts immunity.",
+                clinical_ta: "வைரஸ் காய்ச்சல்களுக்குப் பயன்படுகிறது மற்றும் நோய் எதிர்ப்புச் சக்தியை அதிகரிக்கிறது.",
+                ayurveda_en: "Used in Jwara (fever) management.",
+                ayurveda_ta: "காய்ச்சல் கட்டுப்பாடு மற்றும் நோய் எதிர்ப்பு சக்திக்கு நிலவேம்பு குடிநீராகப் பயன்படுகிறது."
+            },
+            7: {
+                name: "Pirandai (Cissus quadrangularis)",
+                confidence: 99.7,
+                image: "assets/plants/pirandai.webp",
+                clinical_en: "Accelerates bone fracture healing.",
+                clinical_ta: "எலும்பு முறிவு விரைவாகக் கூடுவதற்கு உதவுகிறது.",
+                ayurveda_en: "Known as Asthisamhara; used for bone healing.",
+                ayurveda_ta: "அஸ்திசம்கார என அழைக்கப்படுகிறது; எலும்பு பலம் மற்றும் முறிவு சிகிச்சைக்குப் பயன்படுகிறது."
+            },
+            8: {
+                name: "Sirukurinjan (Gymnema sylvestre)",
+                confidence: 97.9,
+                image: "assets/plants/sirukurinjan.jpg",
+                clinical_en: "Helps regulate blood sugar levels.",
+                clinical_ta: "இரத்த சர்க்கரை அளவைக் கட்டுப்படுத்த உதவுகிறது.",
+                ayurveda_en: "Known as Meshashringi; used in Madhumeha (diabetes).",
+                ayurveda_ta: "மேஷசிருங்கி என அழைக்கப்படுகிறது; நீரிழிவு மற்றும் சர்க்கரை நோய் மேலாண்மைக்கு சிறந்தது."
+            },
+            9: {
+                name: "Vallarai (Centella asiatica)",
+                confidence: 98.3,
+                image: "assets/plants/vallarai.jpg",
+                clinical_en: "Improves brain function and wound healing.",
+                clinical_ta: "மூளை செயல்பாட்டை மேம்படுத்துகிறது மற்றும் புண்களை ஆற்றுகிறது.",
+                ayurveda_en: "Medhya Rasayana for brain and skin health.",
+                ayurveda_ta: "மூளை மற்றும் தோல் ஆரோக்கியத்திற்கான மேத்ய ரசாயனம்."
+            }
+        };
 
-            <div class="footer-links-col">
-                <h4>Navigation</h4>
-                <a href="#scanner">Interactive Scanner</a>
-                <a href="#encyclopedia">Species Database</a>
-                <a href="#architecture">Model Architecture</a>
-                <a href="#research">Research Metrics</a>
-            </div>
+        let currentActiveSpecimen = 0;
+        let uploadedImageSrc = null;
 
-            <div class="footer-links-col">
-                <h4>Project Artifacts</h4>
-                <a href="https://github.com/herbalnet-ai/herbalnet-ai.github.io" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
-                <a href="https://herbalnet-ai.github.io/" target="_blank" rel="noopener noreferrer">Live GitHub Pages</a>
-                <a href="#quickstart">Flask REST API</a>
-            </div>
+        function previewImage(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImg = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
 
-            <div class="footer-links-col">
-                <h4>Author</h4>
-                <p class="author-info">
-                    <strong>Daniel Raaj</strong><br>
-                    <a href="mailto:raajdaniel14@gmail.com" class="author-email"><i class="fa-solid fa-envelope"></i> raajdaniel14@gmail.com</a><br>
-                    <a href="https://github.com/DANIELRAAJ" target="_blank" rel="noopener noreferrer" class="author-gh"><i class="fa-brands fa-github"></i> github.com/DANIELRAAJ</a>
-                </p>
-            </div>
-        </div>
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadedImageSrc = e.target.result;
+                    previewImg.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    // Pick a random plant class for demo inference
+                    currentActiveSpecimen = Math.floor(Math.random() * 10);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-        <div class="footer-bottom">
-            <div class="footer-bottom-container">
-                <p>&copy; 2026 HerbalNet.AI • Created by <a href="https://github.com/DANIELRAAJ" target="_blank" rel="noopener noreferrer">Daniel Raaj</a>. Open Source Botanical Research.</p>
-                <div class="footer-meta-tags">
-                    <span>MobileNetV2</span>
-                    <span>NAS Head</span>
-                    <span>Entropy Filter</span>
-                    <span>Flask / Keras</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+        function selectSample(idx) {
+            currentActiveSpecimen = idx;
+            const profile = PLANT_PROFILES[idx];
+            uploadedImageSrc = profile.image;
 
-    <script src="app.js"></script>
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImg = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            previewImg.src = profile.image;
+            previewContainer.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.classList.remove('border-primary', 'bg-primary/10', 'text-primary');
+            });
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('border-primary', 'bg-primary/10', 'text-primary');
+            }
+        }
+
+        function startScan() {
+            const previewImg = document.getElementById('image-preview');
+
+            // If nothing is selected, default to Class 0 (Brahmi)
+            if (!uploadedImageSrc && (!previewImg.src || previewImg.src === '')) {
+                selectSample(0);
+            }
+
+            const scanOverlay = document.getElementById('scan-animation');
+            if (scanOverlay) scanOverlay.classList.remove('hidden');
+
+            setTimeout(() => {
+                if (scanOverlay) scanOverlay.classList.add('hidden');
+                displayResultPage(currentActiveSpecimen);
+            }, 600);
+        }
+
+        function displayResultPage(idx) {
+            const profile = PLANT_PROFILES[idx] || PLANT_PROFILES[0];
+            const imgSrc = uploadedImageSrc || profile.image;
+
+            document.getElementById('resultImage').src = imgSrc;
+            document.getElementById('resultPlantName').textContent = profile.name;
+            document.getElementById('resultConfidenceText').textContent = profile.confidence + '%';
+            document.getElementById('resultConfidenceBar').style.width = profile.confidence + '%';
+
+            document.getElementById('resultClinicalEn').textContent = profile.clinical_en;
+            document.getElementById('resultClinicalTa').textContent = profile.clinical_ta;
+            document.getElementById('resultAyurvedaEn').textContent = profile.ayurveda_en;
+            document.getElementById('resultAyurvedaTa').textContent = profile.ayurveda_ta;
+
+            const predictElem = document.getElementById('predictView');
+            const resultElem = document.getElementById('resultView');
+
+            if (predictElem) {
+                predictElem.style.display = 'none';
+            }
+            if (resultElem) {
+                resultElem.style.display = 'block';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showPredictPage() {
+            const predictElem = document.getElementById('predictView');
+            const resultElem = document.getElementById('resultView');
+
+            if (resultElem) {
+                resultElem.style.display = 'none';
+            }
+            if (predictElem) {
+                predictElem.style.display = 'flex';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetApp() {
+            uploadedImageSrc = null;
+            currentActiveSpecimen = 0;
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImg = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const fileInput = document.getElementById('plant-upload');
+
+            if (fileInput) fileInput.value = '';
+            if (previewImg) previewImg.src = '';
+            if (previewContainer) previewContainer.classList.add('hidden');
+            if (placeholder) placeholder.classList.remove('hidden');
+
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.classList.remove('border-primary', 'bg-primary/10', 'text-primary');
+            });
+
+            showPredictPage();
+        }
+
+        // Drag and drop visual state handlers
+        const dropZone = document.querySelector('label[for="plant-upload"]');
+        if (dropZone) {
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('bg-primary/20', 'border-primary');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('bg-primary/20', 'border-primary');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    document.getElementById('plant-upload').files = files;
+                    const event = { target: { files: files } };
+                    previewImage(event);
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>
